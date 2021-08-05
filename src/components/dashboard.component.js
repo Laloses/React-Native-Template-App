@@ -1,15 +1,34 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {Component} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import {MainStyles} from '../assets/mainstyles';
+import API from '../libs/API';
 //import API from '../libs/API';
 
 export default class Dashboard extends Component {
   state = {
-    userData: null,
+    dashboardData: null,
   };
-  handleUserInput = input => {
-    this.state.user = input;
+  userData = null;
+  componentDidMount = async () => {
+    await this.getUserData();
+    await this.getDashboardData();
   };
+  getUserData = async () => {
+    this.userData = JSON.parse(await AsyncStorage.getItem('userData'));
+  };
+  getDashboardData = async () => {
+    try {
+      this.setState({
+        ...this.state,
+        dashboardData: await API.instance.dashboard(),
+      });
+    } catch (error) {
+      console.log('Error dashboard data', error);
+      alert('Error dashboard data', error);
+    }
+  };
+  handleUserInput = input => {};
   hanldePassInput = input => {
     this.state.pass = input;
     //Para moverse entre screens
@@ -19,27 +38,13 @@ export default class Dashboard extends Component {
     });
     //ejemplo î
   };
-  setInitialState = data => {
-    this.setState({
-      ...this.state,
-      userData: data,
-    });
-  };
-  componentDidMount() {
-    if (
-      this.props.params &&
-      this.state.userData !== this.props.route.params.userData
-    ) {
-      this.setInitialState({...this.props.route.params.userData});
-    }
-  }
   render() {
-    console.log(this.props);
-    if (this.state.userData === null) {
+    console.log('props dashboardComp: ', this.props);
+    if (this.state.dashboardData === null) {
       return null;
     } else {
-      const userData = this.state.userData;
-      const userDataArray = Object.entries(userData).map(item => {
+      const dashboardData = this.state.dashboardData;
+      const dashboardDataArray = Object.entries(dashboardData).map(item => {
         if (item[1] == null) {
           item[1] = 'null';
         }
@@ -48,9 +53,9 @@ export default class Dashboard extends Component {
       return (
         <View style={styles.container}>
           <FlatList
-            data={userDataArray}
+            data={dashboardDataArray}
             renderItem={({item}) => (
-              <Text key={'userData' + item[0]}>
+              <Text key={'dashboardData' + item[0]}>
                 {item[0] + ' : ' + item[1]}
               </Text>
             )}

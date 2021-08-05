@@ -26,7 +26,9 @@ export default class LogedDrawer extends Component {
     const isLargeScreen = widthScreen >= 768;
     return (
       <Drawer.Navigator
-        drawerContent={CustomDrawerContent}
+        drawerContent={props =>
+          CustomDrawerContent(props, this.props.handleLogedStatus)
+        }
         initialRouteName="Screen_1"
         drawerType={isLargeScreen ? 'permanent' : 'slide'}
         drawerStyle={isLargeScreen ? styles.drawerStyle : null}>
@@ -35,7 +37,6 @@ export default class LogedDrawer extends Component {
             <DashboardStack
               handleErrorMessage={this.props.handleErrorMessage}
               getPressableDrawer={this.pressableDrawer}
-              userData={this.props.userData}
             />
           )}
         </Drawer.Screen>
@@ -53,7 +54,7 @@ export default class LogedDrawer extends Component {
   }
 }
 
-function CustomDrawerContent(props) {
+function CustomDrawerContent(props, fn) {
   return (
     <DrawerContentScrollView
       {...props}
@@ -61,7 +62,7 @@ function CustomDrawerContent(props) {
       <DrawerItemList {...props} />
       <DrawerItem
         label="Salir"
-        onPress={() => props.handleLogedStatus(false, null)}
+        onPress={() => fn(false, null)}
         style={styles.logOutScreenDrawer}
         inactiveBackgroundColor="#ff033e"
         inactiveTintColor="white"

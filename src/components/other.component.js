@@ -28,7 +28,7 @@ export default class OtherComponent extends Component {
     }
   }
   render() {
-    console.log(this.props);
+    console.log('props otherComp', this.props);
     if (this.state.retriveData === null) {
       return null;
     } else {

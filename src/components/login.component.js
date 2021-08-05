@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import CheckBox from '@react-native-community/checkbox';
 import React, {Component} from 'react';
 import {
   Pressable,
@@ -13,6 +15,7 @@ export default class LoginComponent extends Component {
   state = {
     userInput: '',
     passInput: '',
+    stayLoged: false,
   };
   handleLogIn = async () => {
     try {
@@ -20,15 +23,23 @@ export default class LoginComponent extends Component {
         this.state.userInput,
         this.state.passInput,
       );
-      console.log(res);
-      //Maalas credenciales
+      console.log('return login', res);
+      //Malas credenciales
       if (typeof res === 'string') {
         this.props.handleErrorMessage(res);
       }
       //Correcto
-      if (typeof res === 'object') {
+      else if (typeof res === 'object') {
+        //Quitar la contraseña de los datos guardados en la app
+        if (res.hasOwnProperty('password')) {
+          delete res.password;
+        }
         //Cambiamos el status de logeo de la app, y guardamos la info
-        this.props.handleLogedStatus(true, {...res});
+        this.props.handleLogedStatus(true, res);
+        //Verficar si mantiene sesion
+        if (this.state.stayLoged) {
+          await AsyncStorage.setItem('loged', 'true');
+        }
       }
     } catch (error) {
       console.log('Error al logear', error);
@@ -40,6 +51,9 @@ export default class LoginComponent extends Component {
   };
   hanldePassInput = input => {
     this.state.passInput = input;
+  };
+  hanldeStayLoged = input => {
+    this.state.stayLoged = input;
   };
   render() {
     return (
@@ -56,6 +70,12 @@ export default class LoginComponent extends Component {
           style={MainStyles.input}
           onChangeText={this.hanldePassInput}
           placeholder="Mi contraseña"
+        />
+        <Text>Mantener sesion.</Text>
+        <CheckBox
+          disabled={false}
+          value={this.state.stayLoged}
+          onValueChange={newValue => this.hanldeStayLoged(newValue)}
         />
         <Pressable style={MainStyles.btn} onPress={this.handleLogIn}>
           <Text>Iniciar sesión</Text>
