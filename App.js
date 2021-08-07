@@ -40,8 +40,8 @@ export default class App extends Component {
         //Si fue logout cerrar sesion en el servidor
         else if (!statusBool) {
           try {
-            let res = await API.instance.logout();
-            await AsyncStorage.multiRemove(['userData', 'loged']);
+            await API.instance.logout();
+            await AsyncStorage.multiRemove(['userData', 'loged', 'stayLoged']);
           } catch (error) {
             console.log('Error deslogear', error);
             alert('Error deslogear', error);

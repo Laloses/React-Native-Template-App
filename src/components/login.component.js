@@ -17,6 +17,25 @@ export default class LoginComponent extends Component {
     passInput: '',
     stayLoged: false,
   };
+  componentDidMount = async () => {
+    await this.isStayLoged();
+  };
+  isStayLoged = async () => {
+    try {
+      let stayLogedJSON = JSON.parse(await AsyncStorage.getItem('stayLoged'));
+      if (stayLogedJSON && stayLogedJSON.value === true) {
+        this.setState({
+          ...this.state,
+          userInput: stayLogedJSON.user,
+          passInput: stayLogedJSON.pass,
+          stayLoged: true,
+        });
+        await this.handleLogIn();
+      }
+    } catch (error) {
+      console.log('error en isStayLoged');
+    }
+  };
   handleLogIn = async () => {
     try {
       let res = await API.instance.login(
@@ -38,7 +57,15 @@ export default class LoginComponent extends Component {
         this.props.handleLogedStatus(true, res);
         //Verficar si mantiene sesion
         if (this.state.stayLoged) {
-          await AsyncStorage.setItem('loged', 'true');
+          //Guardar datos de sesión
+          await AsyncStorage.setItem(
+            'stayLoged',
+            JSON.stringify({
+              value: true,
+              user: this.state.userInput,
+              pass: this.state.passInput,
+            }),
+          );
         }
       }
     } catch (error) {
@@ -63,6 +90,7 @@ export default class LoginComponent extends Component {
           style={MainStyles.input}
           onChangeText={this.handleUserInput}
           placeholder="Mi usuario"
+          value={this.state.userInput || ''}
         />
         <Text>Contraseña</Text>
         <TextInput
@@ -70,8 +98,9 @@ export default class LoginComponent extends Component {
           style={MainStyles.input}
           onChangeText={this.hanldePassInput}
           placeholder="Mi contraseña"
+          value={this.state.passInput || ''}
         />
-        <Text>Mantener sesion.</Text>
+        <Text>Mantener sesión.</Text>
         <CheckBox
           disabled={false}
           value={this.state.stayLoged}

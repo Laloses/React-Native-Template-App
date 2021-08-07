@@ -7,6 +7,21 @@ export default class API {
   //server_port = PORT;
   base_url_server = `http://${HOST}`;
 
+  checkAuth = async () => {
+    try {
+      let req = await fetch(`${this.base_url_server}/checkAuth.do`);
+      if (req.status === 500) {
+        return req.headers.map['x-error-message'];
+      } else if (req.status === 200) {
+        let json = await req.json();
+        return json;
+      }
+    } catch (error) {
+      console.log('API dashboard error:', error);
+      throw Error(error);
+    }
+  };
+
   login = async (user, pass) => {
     try {
       let req = await fetch(`${this.base_url_server}/login.do`, {
@@ -45,42 +60,19 @@ export default class API {
   };
 
   dashboard = async () => {
-    try {
-      let req = await fetch(`${this.base_url_server}/getWidgets.do`);
-      if (req.status === 500) {
-        return req.headers.map['x-error-message'];
-      } else if (req.status === 200) {
-        let json = await req.json();
-        return json;
+    if ((await this.checkAuth()) != null) {
+      try {
+        let req = await fetch(`${this.base_url_server}/getWidgets.do`);
+        if (req.status === 500) {
+          return req.headers.map['x-error-message'];
+        } else if (req.status === 200) {
+          let json = await req.json();
+          return json;
+        }
+      } catch (error) {
+        console.log('API dashboard error:', error);
+        throw Error(error);
       }
-    } catch (error) {
-      console.log('API dashboard error:', error);
-      throw Error(error);
-    }
-  };
-
-  get = async url => {
-    try {
-      let req = await fetch(url);
-      let json = await req.json();
-      return json;
-    } catch (error) {
-      console.log('API get error:', error);
-      throw Error(error);
-    }
-  };
-
-  post = async (url, body) => {
-    try {
-      let req = await fetch(url, {
-        method: 'POST',
-        body,
-      });
-      let json = await req.json();
-      return json;
-    } catch (error) {
-      console.log('API post error', error);
-      throw Error(error);
     }
   };
 }

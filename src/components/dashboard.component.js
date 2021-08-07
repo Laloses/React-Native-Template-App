@@ -39,10 +39,10 @@ export default class Dashboard extends Component {
     //ejemplo î
   };
   render() {
-    console.log('props dashboardComp: ', this.props);
     if (this.state.dashboardData === null) {
       return null;
     } else {
+      console.log('props dashboardComp: ', this.props);
       const dashboardData = this.state.dashboardData;
       const dashboardDataArray = Object.entries(dashboardData).map(item => {
         if (item[1] == null) {
