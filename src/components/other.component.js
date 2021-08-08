@@ -24,7 +24,9 @@ export default class OtherComponent extends Component {
       this.props.params &&
       this.state.retriveData !== this.props.route.params.retriveData
     ) {
+      this.props.handleLoading(true);
       this.setInitialState({...this.props.route.params.retriveData});
+      this.props.handleLoading(false);
     }
   }
   render() {

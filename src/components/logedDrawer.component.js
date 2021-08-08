@@ -37,6 +37,7 @@ export default class LogedDrawer extends Component {
             <DashboardStack
               handleErrorMessage={this.props.handleErrorMessage}
               getPressableDrawer={this.pressableDrawer}
+              handleLoading={this.props.handleLoading}
             />
           )}
         </Drawer.Screen>
@@ -46,6 +47,7 @@ export default class LogedDrawer extends Component {
             <OtherStack
               handleErrorMessage={this.props.handleErrorMessage}
               getPressableDrawer={this.pressableDrawer}
+              handleLoading={this.props.handleLoading}
             />
           )}
         </Drawer.Screen>
@@ -54,7 +56,7 @@ export default class LogedDrawer extends Component {
   }
 }
 
-function CustomDrawerContent(props, fn) {
+function CustomDrawerContent(props, handleLogedStatus) {
   return (
     <DrawerContentScrollView
       {...props}
@@ -62,7 +64,7 @@ function CustomDrawerContent(props, fn) {
       <DrawerItemList {...props} />
       <DrawerItem
         label="Salir"
-        onPress={() => fn(false, null)}
+        onPress={() => handleLogedStatus(false, null)}
         style={styles.logOutScreenDrawer}
         inactiveBackgroundColor="#ff033e"
         inactiveTintColor="white"

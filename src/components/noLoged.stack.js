@@ -15,6 +15,7 @@ export default class NoLogedStack extends Component {
               route={navigation.route}
               handleErrorMessage={this.props.handleErrorMessage}
               handleLogedStatus={this.props.handleLogedStatus}
+              handleLoading={this.props.handleLoading}
             />
           )}
         </Stack.Screen>

@@ -22,6 +22,7 @@ export default class OtherStack extends Component {
               navigation={navigation.navigation}
               route={navigation.route}
               handleErrorMessage={this.props.handleErrorMessage}
+              handleLoading={this.props.handleLoading}
             />
           )}
         </Stack.Screen>

@@ -22,6 +22,7 @@ export default class LoginComponent extends Component {
   };
   isStayLoged = async () => {
     try {
+      this.props.handleLoading(true);
       let stayLogedJSON = JSON.parse(await AsyncStorage.getItem('stayLoged'));
       if (stayLogedJSON && stayLogedJSON.value === true) {
         this.setState({
@@ -32,12 +33,14 @@ export default class LoginComponent extends Component {
         });
         await this.handleLogIn();
       }
+      this.props.handleLoading(false);
     } catch (error) {
-      console.log('error en isStayLoged');
+      console.log('error en isStayLoged', error);
     }
   };
   handleLogIn = async () => {
     try {
+      this.props.handleLoading(true);
       let res = await API.instance.login(
         this.state.userInput,
         this.state.passInput,
@@ -53,8 +56,6 @@ export default class LoginComponent extends Component {
         if (res.hasOwnProperty('password')) {
           delete res.password;
         }
-        //Cambiamos el status de logeo de la app, y guardamos la info
-        this.props.handleLogedStatus(true, res);
         //Verficar si mantiene sesion
         if (this.state.stayLoged) {
           //Guardar datos de sesión
@@ -67,6 +68,10 @@ export default class LoginComponent extends Component {
             }),
           );
         }
+        //Termina la carga
+        this.props.handleLoading(false);
+        //Cambiamos el status de logeo de la app, y guardamos la info
+        this.props.handleLogedStatus(true, res);
       }
     } catch (error) {
       console.log('Error al logear', error);

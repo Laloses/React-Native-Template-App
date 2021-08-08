@@ -15,20 +15,25 @@ export default class Dashboard extends Component {
     await this.getDashboardData();
   };
   getUserData = async () => {
+    this.props.handleLoading(true);
     this.userData = JSON.parse(await AsyncStorage.getItem('userData'));
+    this.props.handleLoading(false);
   };
   getDashboardData = async () => {
     try {
-      this.setState({
-        ...this.state,
-        dashboardData: await API.instance.dashboard(),
-      });
+      this.props.handleLoading(true);
+      this.setState(
+        {
+          ...this.state,
+          dashboardData: await API.instance.dashboard(),
+        },
+        () => this.props.handleLoading(false),
+      );
     } catch (error) {
       console.log('Error dashboard data', error);
       alert('Error dashboard data', error);
     }
   };
-  handleUserInput = input => {};
   hanldePassInput = input => {
     this.state.pass = input;
     //Para moverse entre screens

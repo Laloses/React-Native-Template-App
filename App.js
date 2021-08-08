@@ -6,11 +6,13 @@ import ErrorNotify from './src/components/errorNotify.component';
 import NoLogedStack from './src/components/noLoged.stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import API from './src/libs/API';
+import LoadingComponent from './src/components/loading.component';
 
 export default class App extends Component {
   state = {
     loged: false,
     errorMessage: null,
+    loading: false,
   };
   componentDidMount = async () => {
     this.isLoged();
@@ -23,7 +25,11 @@ export default class App extends Component {
   handleErrorMessage = msg => {
     this.setState({...this.state, errorMessage: msg});
   };
+  handleLoading = value => {
+    this.setState({...this.state, loading: value});
+  };
   handleLogedStatus = (statusBool, data) => {
+    this.handleLoading(true);
     this.setState(
       {
         ...this.state,
@@ -47,6 +53,7 @@ export default class App extends Component {
             alert('Error deslogear', error);
           }
         }
+        this.handleLoading(false);
       },
     );
   };
@@ -58,14 +65,17 @@ export default class App extends Component {
           <NoLogedStack
             handleErrorMessage={this.handleErrorMessage}
             handleLogedStatus={this.handleLogedStatus}
+            handleLoading={this.handleLoading}
           />
         ) : (
           <LogedDrawer
             handleErrorMessage={this.handleErrorMessage}
             handleLogedStatus={this.handleLogedStatus}
+            handleLoading={this.handleLoading}
           />
         )}
         <ErrorNotify message={this.state.errorMessage} />
+        <LoadingComponent loading={this.state.loading} />
       </NavigationContainer>
     );
   }
