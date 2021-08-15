@@ -71,11 +71,11 @@ export default class LoginComponent extends Component {
       }
     } catch (error) {
       //Malas credenciales
-      if (typeof error === 'string') {
-        this.props.handleErrorMessage(error);
-        //Termina la carga
-        this.props.handleLoading(false);
-      }
+      typeof error === 'string'
+        ? this.props.handleErrorMessage(error, 'warning')
+        : this.props.handleErrorMessage(error, 'red');
+
+      this.props.handleLoading(false);
       console.log('Error al logear', error);
     }
   };

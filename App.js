@@ -12,6 +12,7 @@ export default class App extends Component {
   state = {
     loged: false,
     errorMessage: null,
+    errorProblem: null,
     loading: false,
   };
   componentDidMount = async () => {
@@ -22,8 +23,8 @@ export default class App extends Component {
     localLoged === 'true' ? (localLoged = true) : (localLoged = false);
     this.setState({...this.state, loged: localLoged});
   };
-  handleErrorMessage = msg => {
-    this.setState({errorMessage: msg}, () => {
+  handleErrorMessage = (msg, problem) => {
+    this.setState({errorMessage: msg, errorProblem: problem}, () => {
       setTimeout(() => {
         this.setState({errorMessage: null});
       }, 3000);
@@ -48,8 +49,8 @@ export default class App extends Component {
         await AsyncStorage.multiRemove(['userData', 'loged', 'stayLoged']);
       } catch (error) {
         if (typeof error === 'string') {
-          this.props.handleErrorMessage(error);
-          this.props.handleLoading(false);
+          this.handleErrorMessage(error);
+          this.handleLoading(false);
         }
         console.log('Error deslogear', error);
       }
@@ -80,7 +81,7 @@ export default class App extends Component {
             handleLoading={this.handleLoading}
           />
         )}
-        <ErrorNotify message={this.state.errorMessage} />
+        <ErrorNotify message={this.state.errorMessage} problem={this.state.errorProblem} />
         <LoadingComponent loading={this.state.loading} />
       </NavigationContainer>
     );

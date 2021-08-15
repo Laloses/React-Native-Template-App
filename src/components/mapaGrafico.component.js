@@ -6,31 +6,35 @@ import API from '../libs/API';
 
 export default class MapaGrafico extends Component {
   state = {
-    dashboardData: null,
+    mapData: null,
   };
   userData = null;
   componentDidMount = async () => {
     await this.getUserData();
-    await this.getDashboardData();
+    await this.getmapData();
   };
   getUserData = async () => {
     this.props.handleLoading(true);
     this.userData = JSON.parse(await AsyncStorage.getItem('userData'));
     this.props.handleLoading(false);
   };
-  getDashboardData = async () => {
+  getmapData = async () => {
     try {
       this.props.handleLoading(true);
       this.setState(
         {
           ...this.state,
-          dashboardData: await API.instance.dashboard(),
+          mapData: await API.instance.dashboard(),
         },
         () => this.props.handleLoading(false),
       );
     } catch (error) {
+      typeof error === 'string'
+        ? this.props.handleErrorMessage(error, 'warning')
+        : this.props.handleErrorMessage(error, 'red');
+
+      this.props.handleLoading(false);
       console.log('Error dashboard data', error);
-      alert('Error dashboard data', error);
     }
   };
   hanldePassInput = input => {
@@ -42,11 +46,11 @@ export default class MapaGrafico extends Component {
     });
   };
   render() {
-    if (this.state.dashboardData === null) {
+    if (this.state.mapData === null) {
       return null;
     } else {
-      const dashboardData = this.state.dashboardData;
-      const dashboardDataArray = Object.entries(dashboardData).map(item => {
+      const mapData = this.state.mapData;
+      const mapDataArray = Object.entries(mapData).map(item => {
         if (item[1] === null) {
           item[1] = 'null';
         }
@@ -55,8 +59,8 @@ export default class MapaGrafico extends Component {
       return (
         <View style={styles.container}>
           <FlatList
-            data={dashboardDataArray}
-            keyExtractor={item => 'dashboardData' + item[0]}
+            data={mapDataArray}
+            keyExtractor={item => 'mapData' + item[0]}
             renderItem={({item}) => (
               <Text>{`${item[0]} : ${JSON.stringify(item[1])} \n`}</Text>
             )}
