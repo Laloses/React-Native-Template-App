@@ -6,9 +6,9 @@ import {
   DrawerItem,
   DrawerContentScrollView,
 } from '@react-navigation/drawer';
-import DashboardStack from './dashboard.stack';
 import OtherStack from './other.stack';
 import PressableProfile from './pressableProfile.component';
+import DashboardTabs from './dashboard.tabs.js';
 
 const Drawer = createDrawerNavigator();
 const widthScreen = Dimensions.get('screen').width;
@@ -18,15 +18,15 @@ export default class LogedDrawer extends Component {
     const isLargeScreen = widthScreen >= 768;
     return (
       <Drawer.Navigator
-        drawerContent={props =>
-          CustomDrawerContent(props, this.props.handleLogedStatus)
-        }
         initialRouteName="Screen_1"
         drawerType={isLargeScreen ? 'permanent' : 'slide'}
-        drawerStyle={isLargeScreen ? styles.drawerStyle : null}>
+        drawerStyle={isLargeScreen ? styles.drawerStyle : null}
+        drawerContent={props =>
+          CustomDrawerContent(props, this.props.handleLogedStatus)
+        }>
         <Drawer.Screen name="Screen_1" options={{title: 'Dashboard'}}>
           {() => (
-            <DashboardStack
+            <DashboardTabs
               handleErrorMessage={this.props.handleErrorMessage}
               handleLoading={this.props.handleLoading}
             />

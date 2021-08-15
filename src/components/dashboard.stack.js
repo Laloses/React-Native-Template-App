@@ -3,6 +3,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import Dashboard from './dashboard.component';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PressableDrawer from './pressableDrawer.component';
+import {StyleSheet} from 'react-native';
 
 const Stack = createStackNavigator();
 
@@ -16,7 +17,9 @@ export default class DashboardStack extends Component {
   };
   render() {
     return (
-      <Stack.Navigator initialRouteName="Screen_1">
+      <Stack.Navigator
+        initialRouteName="Screen_1"
+        screenOptions={{headerStyle: styles.headerStack}}>
         <Stack.Screen
           name="Screen_1"
           options={({route, navigation}) => ({
@@ -38,3 +41,9 @@ export default class DashboardStack extends Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  headerStack: {
+    borderBottomWidth: 1,
+  },
+});

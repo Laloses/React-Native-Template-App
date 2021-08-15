@@ -4,7 +4,7 @@ import {FlatList, StyleSheet, Text, View} from 'react-native';
 import {MainStyles} from '../assets/mainstyles';
 import API from '../libs/API';
 
-export default class Dashboard extends Component {
+export default class MapaGrafico extends Component {
   state = {
     dashboardData: null,
   };
