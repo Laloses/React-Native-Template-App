@@ -3,7 +3,7 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 platform :ios, '10.0'
 
-target 'Zaex2' do
+target 'TemplateApp' do
   config = use_native_modules!
 
   use_react_native!(
@@ -12,9 +12,7 @@ target 'Zaex2' do
     :hermes_enabled => false
   )
 
-  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
-
-  target 'Zaex2Tests' do
+  target 'TemplateAppTests' do
     inherit! :complete
     # Pods for testing
   end
