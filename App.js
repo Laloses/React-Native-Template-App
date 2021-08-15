@@ -81,7 +81,10 @@ export default class App extends Component {
             handleLoading={this.handleLoading}
           />
         )}
-        <ErrorNotify message={this.state.errorMessage} problem={this.state.errorProblem} />
+        <ErrorNotify
+          message={this.state.errorMessage}
+          problem={this.state.errorProblem}
+        />
         <LoadingComponent loading={this.state.loading} />
       </NavigationContainer>
     );

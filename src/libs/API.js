@@ -96,4 +96,37 @@ export default class API {
       throw Error(error);
     }
   };
+
+  getMapUserData = async () => {
+    if ((await this.checkAuth()) != null) {
+      try {
+        let res = null;
+        //let req = await fetch(`${this.base_url_server}/getWidgets.do`);
+        let req = {
+          status: 200,
+          headers: {
+            map: {'x-error-message': 'Aún no implementado'},
+          },
+        };
+        req.status === 200
+          ? (res = [
+              {
+                source: {
+                  id: 3,
+                  name: 'C',
+                },
+                target: {
+                  id: 11,
+                  name: 'K',
+                },
+              },
+            ]) //await req.json()
+          : (res = Promise.reject(req.headers.map['x-error-message']));
+        return res;
+      } catch (error) {
+        console.log('API dashboard error:', error);
+        throw Error(error);
+      }
+    }
+  };
 }

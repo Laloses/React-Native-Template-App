@@ -1,12 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {Component} from 'react';
-import {FlatList, StyleSheet, Text, View} from 'react-native';
-import {MainStyles} from '../assets/mainstyles';
+import {StyleSheet, View} from 'react-native';
 import API from '../libs/API';
+import AwesomeHierarchyGraph from 'react-native-d3-tree-graph';
 
 export default class MapaGrafico extends Component {
   state = {
     mapData: null,
+    rootNode: null,
   };
   userData = null;
   componentDidMount = async () => {
@@ -21,10 +22,23 @@ export default class MapaGrafico extends Component {
   getmapData = async () => {
     try {
       this.props.handleLoading(true);
+      let mapData = await API.instance.getMapUserData();
       this.setState(
         {
           ...this.state,
-          mapData: await API.instance.dashboard(),
+          mapData: mapData,
+          rootNode: {
+            name: '',
+            id: 1,
+            hidden: true,
+            children: [
+              {
+                name: 'Q',
+                id: 16,
+                no_parent: true,
+              },
+            ],
+          },
         },
         () => this.props.handleLoading(false),
       );
@@ -49,21 +63,11 @@ export default class MapaGrafico extends Component {
     if (this.state.mapData === null) {
       return null;
     } else {
-      const mapData = this.state.mapData;
-      const mapDataArray = Object.entries(mapData).map(item => {
-        if (item[1] === null) {
-          item[1] = 'null';
-        }
-        return item;
-      });
       return (
         <View style={styles.container}>
-          <FlatList
-            data={mapDataArray}
-            keyExtractor={item => 'mapData' + item[0]}
-            renderItem={({item}) => (
-              <Text>{`${item[0]} : ${JSON.stringify(item[1])} \n`}</Text>
-            )}
+          <AwesomeHierarchyGraph
+            root={this.state.rootNode}
+            siblings={this.state.mapData}
           />
         </View>
       );
@@ -73,6 +77,19 @@ export default class MapaGrafico extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    ...MainStyles.container,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+  instructions: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
   },
 });
