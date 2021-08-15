@@ -2,8 +2,31 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {Component} from 'react';
 import {StyleSheet, View} from 'react-native';
 import API from '../libs/API';
-import AwesomeHierarchyGraph from 'react-native-d3-tree-graph';
+import Tree from 'react-hierarchy-tree-graph';
 
+const myTreeData = [
+  {
+    name: 'Top Level',
+    attributes: {
+      keyA: 'val A',
+      keyB: 'val B',
+      keyC: 'val C',
+    },
+    children: [
+      {
+        name: 'Level 2: A',
+        attributes: {
+          keyA: 'val A',
+          keyB: 'val B',
+          keyC: 'val C',
+        },
+      },
+      {
+        name: 'Level 2: B',
+      },
+    ],
+  },
+];
 export default class MapaGrafico extends Component {
   state = {
     mapData: null,
@@ -25,22 +48,13 @@ export default class MapaGrafico extends Component {
       let mapData = await API.instance.getMapUserData();
       this.setState(
         {
-          ...this.state,
-          mapData: mapData,
-          rootNode: {
-            name: '',
-            id: 1,
-            hidden: true,
-            children: [
-              {
-                name: 'Q',
-                id: 16,
-                no_parent: true,
-              },
-            ],
-          },
+          mapData: mapData.siblings,
+          rootNode: mapData.root,
         },
-        () => this.props.handleLoading(false),
+        () => {
+          this.props.handleLoading(false);
+          console.log('state Mapa:', this.state);
+        },
       );
     } catch (error) {
       typeof error === 'string'
@@ -48,7 +62,7 @@ export default class MapaGrafico extends Component {
         : this.props.handleErrorMessage(error, 'red');
 
       this.props.handleLoading(false);
-      console.log('Error dashboard data', error);
+      console.log('Error mapaGrafico:getmapData', error);
     }
   };
   hanldePassInput = input => {
@@ -64,11 +78,8 @@ export default class MapaGrafico extends Component {
       return null;
     } else {
       return (
-        <View style={styles.container}>
-          <AwesomeHierarchyGraph
-            root={this.state.rootNode}
-            siblings={this.state.mapData}
-          />
+        <View id="treeWrapper" style={styles.container}>
+          <Tree data={myTreeData} />
         </View>
       );
     }
@@ -76,20 +87,5 @@ export default class MapaGrafico extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+  container: {width: '50em', height: '20em'},
 });

@@ -40,7 +40,12 @@ export default class DashboardTabs extends Component {
               />
             ),
           }}>
-          {() => <MapaGrafico />}
+          {() => (
+            <MapaGrafico
+              handleErrorMessage={this.props.handleErrorMessage}
+              handleLoading={this.props.handleLoading}
+            />
+          )}
         </Tabs.Screen>
       </Tabs.Navigator>
     );

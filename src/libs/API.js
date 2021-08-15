@@ -102,25 +102,34 @@ export default class API {
       try {
         let res = null;
         //let req = await fetch(`${this.base_url_server}/getWidgets.do`);
-        let req = {
-          status: 200,
-          headers: {
-            map: {'x-error-message': 'Aún no implementado'},
-          },
-        };
+        let req = {status: 200};
         req.status === 200
-          ? (res = [
-              {
-                source: {
-                  id: 3,
-                  name: 'C',
+          ? (res = {
+              siblings: [
+                {
+                  source: {
+                    id: 3,
+                    name: 'C',
+                  },
+                  target: {
+                    id: 11,
+                    name: 'K',
+                  },
                 },
-                target: {
-                  id: 11,
-                  name: 'K',
-                },
+              ],
+              root: {
+                name: '',
+                id: 1,
+                hidden: true,
+                children: [
+                  {
+                    name: 'Q',
+                    id: 16,
+                    no_parent: true,
+                  },
+                ],
               },
-            ]) //await req.json()
+            }) //await req.json()
           : (res = Promise.reject(req.headers.map['x-error-message']));
         return res;
       } catch (error) {
