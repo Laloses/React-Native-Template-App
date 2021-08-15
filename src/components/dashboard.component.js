@@ -41,16 +41,14 @@ export default class Dashboard extends Component {
       userData: {...this.userData},
       nameScreen: `Screen de ${this.userData.FirstName}`,
     });
-    //ejemplo î
   };
   render() {
     if (this.state.dashboardData === null) {
       return null;
     } else {
-      console.log('props dashboardComp: ', this.props);
       const dashboardData = this.state.dashboardData;
       const dashboardDataArray = Object.entries(dashboardData).map(item => {
-        if (item[1] == null) {
+        if (item[1] === null) {
           item[1] = 'null';
         }
         return item;
@@ -59,10 +57,9 @@ export default class Dashboard extends Component {
         <View style={styles.container}>
           <FlatList
             data={dashboardDataArray}
+            keyExtractor={item => 'dashboardData' + item[0]}
             renderItem={({item}) => (
-              <Text key={'dashboardData' + item[0]}>
-                {item[0] + ' : ' + item[1]}
-              </Text>
+              <Text>{`${item[0]} : ${JSON.stringify(item[1])} \n`}</Text>
             )}
           />
         </View>

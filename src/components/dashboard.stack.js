@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import Dashboard from './dashboard.component';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import PressableDrawer from './pressableDrawer.component';
 
 const Stack = createStackNavigator();
 
@@ -22,10 +23,7 @@ export default class DashboardStack extends Component {
             title: this.userData
               ? `Dashboard de ${this.userData.FirstName}`
               : 'Dashboard',
-            headerLeft: () =>
-              this.props.getPressableDrawer
-                ? this.props.getPressableDrawer(navigation)
-                : null,
+            headerLeft: () => <PressableDrawer navigation={navigation} />,
           })}>
           {navigation => (
             <Dashboard

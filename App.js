@@ -23,36 +23,42 @@ export default class App extends Component {
     this.setState({...this.state, loged: localLoged});
   };
   handleErrorMessage = msg => {
-    this.setState({...this.state, errorMessage: msg});
+    this.setState({errorMessage: msg}, () => {
+      setTimeout(() => {
+        this.setState({errorMessage: null});
+      }, 3000);
+    });
   };
   handleLoading = value => {
     this.setState({...this.state, loading: value});
   };
-  handleLogedStatus = (statusBool, data) => {
+  handleLogedStatus = async (statusBool, data) => {
     this.handleLoading(true);
+    //Si fue login guardar data
+    if (statusBool === true) {
+      await AsyncStorage.setItem(
+        'userData',
+        data ? JSON.stringify(data) : null,
+      );
+    }
+    //Si fue logout cerrar sesion en el servidor
+    else if (statusBool === false) {
+      try {
+        await API.instance.logout();
+        await AsyncStorage.multiRemove(['userData', 'loged', 'stayLoged']);
+      } catch (error) {
+        if (typeof error === 'string') {
+          this.props.handleErrorMessage(error);
+          this.props.handleLoading(false);
+        }
+        console.log('Error deslogear', error);
+      }
+    }
     this.setState(
       {
-        ...this.state,
         loged: statusBool,
       },
-      async () => {
-        //Si fue login guardar data
-        if (statusBool) {
-          await AsyncStorage.setItem(
-            'userData',
-            data ? JSON.stringify(data) : null,
-          );
-        }
-        //Si fue logout cerrar sesion en el servidor
-        else if (!statusBool) {
-          try {
-            await API.instance.logout();
-            await AsyncStorage.multiRemove(['userData', 'loged', 'stayLoged']);
-          } catch (error) {
-            console.log('Error deslogear', error);
-            alert('Error deslogear', error);
-          }
-        }
+      function () {
         this.handleLoading(false);
       },
     );

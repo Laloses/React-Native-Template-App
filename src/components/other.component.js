@@ -45,11 +45,8 @@ export default class OtherComponent extends Component {
         <View style={styles.container}>
           <FlatList
             data={userDataArray}
-            renderItem={({item}) => (
-              <Text key={'retriveData' + item[0]}>
-                {item[0] + ' : ' + item[1]}
-              </Text>
-            )}
+            keyExtractor={item => 'retriveData' + item[0]}
+            renderItem={({item}) => <Text>{item[0] + ' : ' + item[1]}</Text>}
           />
         </View>
       );

@@ -3,7 +3,7 @@ import {StyleSheet} from 'react-native';
 export const MainStyles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: 10,
+    margin: 5,
     padding: 5,
     borderRadius: 25,
     borderStyle: 'dotted',

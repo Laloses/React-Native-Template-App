@@ -46,15 +46,11 @@ export default class LoginComponent extends Component {
         this.state.passInput,
       );
       console.log('return login', res);
-      //Malas credenciales
-      if (typeof res === 'string') {
-        this.props.handleErrorMessage(res);
-      }
       //Correcto
-      else if (typeof res === 'object') {
+      if (typeof res === 'object') {
         //Quitar la contraseña de los datos guardados en la app
         if (res.hasOwnProperty('password')) {
-          delete res.password;
+          delete res.Password;
         }
         //Verficar si mantiene sesion
         if (this.state.stayLoged) {
@@ -74,18 +70,23 @@ export default class LoginComponent extends Component {
         this.props.handleLogedStatus(true, res);
       }
     } catch (error) {
+      //Malas credenciales
+      if (typeof error === 'string') {
+        this.props.handleErrorMessage(error);
+        //Termina la carga
+        this.props.handleLoading(false);
+      }
       console.log('Error al logear', error);
-      alert('Error al logear', error);
     }
   };
   handleUserInput = input => {
-    this.state.userInput = input;
+    this.setState({userInput: input});
   };
   hanldePassInput = input => {
-    this.state.passInput = input;
+    this.setState({passInput: input});
   };
   hanldeStayLoged = input => {
-    this.state.stayLoged = input;
+    this.setState({stayLoged: input});
   };
   render() {
     return (

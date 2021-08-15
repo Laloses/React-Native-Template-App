@@ -1,27 +1,19 @@
 import React, {Component} from 'react';
-import {Dimensions, Image, Pressable, StyleSheet} from 'react-native';
+import {Dimensions, ScrollView, StyleSheet} from 'react-native';
 import {
   createDrawerNavigator,
-  DrawerContentScrollView,
   DrawerItemList,
   DrawerItem,
+  DrawerContentScrollView,
 } from '@react-navigation/drawer';
 import DashboardStack from './dashboard.stack';
-import {getPixelSizeForLayoutSize} from 'react-native/Libraries/Utilities/PixelRatio';
 import OtherStack from './other.stack';
+import PressableProfile from './pressableProfile.component';
 
 const Drawer = createDrawerNavigator();
 const widthScreen = Dimensions.get('screen').width;
 
 export default class LogedDrawer extends Component {
-  pressableDrawer = navigation => (
-    <Pressable onPress={() => navigation.openDrawer()}>
-      <Image
-        style={styles.imgIcon}
-        source={require('../assets/img/sideMenuIcon.png')}
-      />
-    </Pressable>
-  );
   render() {
     const isLargeScreen = widthScreen >= 768;
     return (
@@ -36,7 +28,6 @@ export default class LogedDrawer extends Component {
           {() => (
             <DashboardStack
               handleErrorMessage={this.props.handleErrorMessage}
-              getPressableDrawer={this.pressableDrawer}
               handleLoading={this.props.handleLoading}
             />
           )}
@@ -46,7 +37,6 @@ export default class LogedDrawer extends Component {
           {() => (
             <OtherStack
               handleErrorMessage={this.props.handleErrorMessage}
-              getPressableDrawer={this.pressableDrawer}
               handleLoading={this.props.handleLoading}
             />
           )}
@@ -61,7 +51,10 @@ function CustomDrawerContent(props, handleLogedStatus) {
     <DrawerContentScrollView
       {...props}
       contentContainerStyle={styles.containerDrawerScrollView}>
-      <DrawerItemList {...props} />
+      <PressableProfile {...props} />
+      <ScrollView style={styles.containerListItemsDrawer}>
+        <DrawerItemList {...props} />
+      </ScrollView>
       <DrawerItem
         label="Salir"
         onPress={() => handleLogedStatus(false, null)}
@@ -74,20 +67,15 @@ function CustomDrawerContent(props, handleLogedStatus) {
 }
 
 const styles = StyleSheet.create({
-  imgIcon: {
-    width: getPixelSizeForLayoutSize(12),
-    height: getPixelSizeForLayoutSize(12),
-    marginLeft: 10,
-  },
   drawerStyle: {
     width: 'auto',
   },
   logOutScreenDrawer: {
-    position: 'absolute',
-    bottom: 0,
     width: '92%',
   },
   containerDrawerScrollView: {
     height: '100%',
+    maxHeight: '100%',
   },
+  containerListItemsDrawer: {},
 });
