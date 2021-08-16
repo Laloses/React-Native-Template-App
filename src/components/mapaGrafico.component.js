@@ -1,36 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {Component} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
+import {WebView} from 'react-native-webview';
 import API from '../libs/API';
-import Tree from 'react-hierarchy-tree-graph';
+import TreeChart from '../assets/html/tree.chart'
 
-const myTreeData = [
-  {
-    name: 'Top Level',
-    attributes: {
-      keyA: 'val A',
-      keyB: 'val B',
-      keyC: 'val C',
-    },
-    children: [
-      {
-        name: 'Level 2: A',
-        attributes: {
-          keyA: 'val A',
-          keyB: 'val B',
-          keyC: 'val C',
-        },
-      },
-      {
-        name: 'Level 2: B',
-      },
-    ],
-  },
-];
 export default class MapaGrafico extends Component {
   state = {
     mapData: null,
     rootNode: null,
+    mapConfig: null
   };
   userData = null;
   componentDidMount = async () => {
@@ -48,8 +27,7 @@ export default class MapaGrafico extends Component {
       let mapData = await API.instance.getMapUserData();
       this.setState(
         {
-          mapData: mapData.siblings,
-          rootNode: mapData.root,
+          mapData: mapData,
         },
         () => {
           this.props.handleLoading(false);
@@ -78,14 +56,18 @@ export default class MapaGrafico extends Component {
       return null;
     } else {
       return (
-        <View id="treeWrapper" style={styles.container}>
-          <Tree data={myTreeData} />
-        </View>
+        <WebView
+          originWhitelist={["*"]}
+          source={{html: TreeChart(this.state.mapData)}}
+          style={styles.container}
+        />
       );
     }
   }
 }
 
 const styles = StyleSheet.create({
-  container: {width: '50em', height: '20em'},
+  container: {
+    height: '100%'
+  },
 });

@@ -12,6 +12,7 @@ target 'TemplateApp' do
     :hermes_enabled => false
   )
 
+
   target 'TemplateAppTests' do
     inherit! :complete
     # Pods for testing
