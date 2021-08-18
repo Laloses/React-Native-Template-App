@@ -58,7 +58,7 @@ export default class MapaGrafico extends Component {
       return (
         <WebView
           originWhitelist={["*"]}
-          source={{html: TreeChart(this.state.mapData)}}
+          source={{html: TreeChart(this.state.mapData, this.props.colorMode.backgroundColor)}}
           style={styles.container}
         />
       );

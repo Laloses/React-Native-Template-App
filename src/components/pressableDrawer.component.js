@@ -11,7 +11,10 @@ export default class PressableDrawer extends Component {
         <Pressable onPress={() => this.props.navigation.openDrawer()}>
           <Image
             style={styles.imgIcon}
-            source={require('../assets/img/sideMenuIcon.png')}
+            source={this.props.colorMode.backgroundColor ==='black'
+              ? require('../assets/img/sideMenuIconWhite.png')
+              : require('../assets/img/sideMenuIcon.png')
+            }
           />
         </Pressable>
       );
@@ -21,8 +24,8 @@ export default class PressableDrawer extends Component {
 
 const styles = StyleSheet.create({
   imgIcon: {
-    width: getPixelSizeForLayoutSize(12),
-    height: getPixelSizeForLayoutSize(12),
+    width: getPixelSizeForLayoutSize(10),
+    height: getPixelSizeForLayoutSize(10),
     marginLeft: 10,
   },
 });

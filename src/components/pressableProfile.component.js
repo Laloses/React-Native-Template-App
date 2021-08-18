@@ -49,10 +49,14 @@ export default class PressableProfile extends Component {
         <Pressable
           onPress={() => navigation.closeDrawer()}
           style={styles.containerRow}>
-          <View style={[MainStyles.container, styles.subcontainer]}>
+          <View style={[MainStyles.container,this.props.colorMode, styles.subcontainer]}>
             <Image
               style={styles.editIcon}
-              source={require('../assets/img/editIcon.png')}
+              source={
+                this.props.colorMode.backgroundColor === 'black' 
+                ? require('../assets/img/editIconWhite.png')
+                : require('../assets/img/editIcon.png')
+              }
             />
             <Image
               style={styles.imgProfile}
@@ -60,8 +64,8 @@ export default class PressableProfile extends Component {
                 this.state.imgPhoto || require('../assets/img/profilePhoto.png')
               }
             />
-            <Text>{`${this.state.name} ${this.state.LastName}`}</Text>
-            <Text>{`#${this.state.referalCode}`}</Text>
+            <Text style={this.props.colorMode}>{`${this.state.name} ${this.state.LastName}`}</Text>
+            <Text style={this.props.colorMode}>{`#${this.state.referalCode}`}</Text>
           </View>
         </Pressable>
       </View>

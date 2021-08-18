@@ -7,21 +7,51 @@ import NoLogedStack from './src/components/noLoged.stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import API from './src/libs/API';
 import LoadingComponent from './src/components/loading.component';
+import { MainStyles } from './src/assets/mainstyles';
 
 export default class App extends Component {
+  currentHours = new Date().getHours();
   state = {
     loged: false,
     errorMessage: null,
     errorProblem: null,
     loading: false,
+    colorMode: this.currentHours > 7 && this.currentHours < 20 ? MainStyles.darkMode : MainStyles.darkMode,
   };
   componentDidMount = async () => {
-    this.isLoged();
+    await this.isLoged();
+    await this.checkUserSettings();
   };
   isLoged = async () => {
     let localLoged = await AsyncStorage.getItem('loged');
     localLoged === 'true' ? (localLoged = true) : (localLoged = false);
     this.setState({...this.state, loged: localLoged});
+  };
+  checkUserSettings= async() =>{
+    try {
+      this.handleLoading(true);
+      let userSettings = JSON.parse(await AsyncStorage.getItem('userSettings'));
+      
+      if(userSettings && userSettings.keys())
+      userSettings.keys().forEach(key => {
+        switch (key) {
+          case 'colorMode':
+            let colors = userSettings[key] === 'clear' ? MainStyles.clearMode : MainStyles.darkMode;
+            this.setState({colorMode: colors})
+            break;
+          default:
+            break;
+        }
+      });
+      this.handleLoading(false);
+    } catch (error) {
+      typeof error === 'string'
+        ? this.handleErrorMessage(error, 'warning')
+        : this.handleErrorMessage(error, 'red');
+
+      this.handleLoading(false);
+      console.log('error en App::checkUserSettings', error);
+    }
   };
   handleErrorMessage = (msg, problem) => {
     this.setState({errorMessage: msg, errorProblem: problem}, () => {
@@ -73,12 +103,14 @@ export default class App extends Component {
             handleErrorMessage={this.handleErrorMessage}
             handleLogedStatus={this.handleLogedStatus}
             handleLoading={this.handleLoading}
+            colorMode={this.state.colorMode}
           />
         ) : (
           <LogedDrawer
             handleErrorMessage={this.handleErrorMessage}
             handleLogedStatus={this.handleLogedStatus}
             handleLoading={this.handleLoading}
+            colorMode={this.state.colorMode}
           />
         )}
         <ErrorNotify

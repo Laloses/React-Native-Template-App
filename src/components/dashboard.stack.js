@@ -19,14 +19,21 @@ export default class DashboardStack extends Component {
     return (
       <Stack.Navigator
         initialRouteName="Screen_1"
-        screenOptions={{headerStyle: styles.headerStack}}>
+        screenOptions={{
+          headerStyle: [{
+            backgroundColor: this.props.colorMode.backgroundColor, 
+            ...styles.headerStack
+          }],
+          headerTintColor: this.props.colorMode.color,
+          headerTitleAlign: 'center',
+        }}>
         <Stack.Screen
           name="Screen_1"
           options={({route, navigation}) => ({
             title: this.userData
               ? `Dashboard de ${this.userData.FirstName}`
               : 'Dashboard',
-            headerLeft: () => <PressableDrawer navigation={navigation} />,
+            headerLeft: () => <PressableDrawer navigation={navigation} colorMode={this.props.colorMode} />,
           })}>
           {navigation => (
             <Dashboard
@@ -34,6 +41,7 @@ export default class DashboardStack extends Component {
               route={navigation.route}
               handleErrorMessage={this.props.handleErrorMessage}
               handleLoading={this.props.handleLoading}
+              colorMode={this.props.colorMode}
             />
           )}
         </Stack.Screen>

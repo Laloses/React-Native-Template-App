@@ -35,7 +35,12 @@ export default class LoginComponent extends Component {
       }
       this.props.handleLoading(false);
     } catch (error) {
-      console.log('error en isStayLoged', error);
+      typeof error === 'string'
+        ? this.props.handleErrorMessage(error, 'warning')
+        : this.props.handleErrorMessage(error, 'red');
+
+      this.props.handleLoading(false);
+      console.log('error en LoginComponent::isStayLoged', error);
     }
   };
   handleLogIn = async () => {
@@ -90,30 +95,35 @@ export default class LoginComponent extends Component {
   };
   render() {
     return (
-      <SafeAreaView style={styles.container}>
-        <Text>Usuario</Text>
+      <SafeAreaView style={[ this.props.colorMode, styles.container]}>
+        <Text style={this.props.colorMode}>Usuario</Text>
         <TextInput
-          style={MainStyles.input}
+          style={[this.props.colorMode, MainStyles.input]}
           onChangeText={this.handleUserInput}
           placeholder="Mi usuario"
+          placeholderTextColor={MainStyles.placeholderColor.color}
           value={this.state.userInput || ''}
         />
         <Text>Contraseña</Text>
         <TextInput
           textContentType="password"
-          style={MainStyles.input}
+          style={[this.props.colorMode, MainStyles.input]}
           onChangeText={this.hanldePassInput}
           placeholder="Mi contraseña"
+          placeholderTextColor={MainStyles.placeholderColor.color}
           value={this.state.passInput || ''}
         />
-        <Text>Mantener sesión.</Text>
+        <Text style={this.props.colorMode}>Mantener sesión.</Text>
         <CheckBox
+          tintColors={{true: this.props.colorMode.color, false:this.props.colorMode.color}} //Android
+          tintColor={this.props.colorMode.color} //IOS
+          onTintColor={this.props.colorMode.color} //IOS
           disabled={false}
           value={this.state.stayLoged}
           onValueChange={newValue => this.hanldeStayLoged(newValue)}
         />
-        <Pressable style={MainStyles.btn} onPress={this.handleLogIn}>
-          <Text>Iniciar sesión</Text>
+        <Pressable style={[this.props.colorMode, MainStyles.btn]} onPress={this.handleLogIn}>
+          <Text style={this.props.colorMode}>Iniciar sesión</Text>
         </Pressable>
       </SafeAreaView>
     );
@@ -121,5 +131,10 @@ export default class LoginComponent extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {...MainStyles.container, ...MainStyles.justifyCenter},
+  container: {
+    ...MainStyles.container, 
+    ...MainStyles.justifyCenter,
+    borderRadius:0,
+    margin:0
+  },
 });

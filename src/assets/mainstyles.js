@@ -1,6 +1,16 @@
 import {StyleSheet} from 'react-native';
 
 export const MainStyles = StyleSheet.create({
+  darkMode:{
+    backgroundColor: 'black',
+    borderColor: '#9c9c9c',
+    color: '#FFFFFF',
+  },
+  clearMode:{
+    backgroundColor: 'white',
+    borderColor: '#6b6b6b',
+    color: '#121212',
+  },
   container: {
     flex: 1,
     margin: 5,
@@ -15,7 +25,6 @@ export const MainStyles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: 'black',
   },
   btn: {
     padding: 5,
@@ -23,6 +32,7 @@ export const MainStyles = StyleSheet.create({
     borderWidth: 1,
     width: 100,
   },
+  placeholderColor: {color: "#adadad"},
   toast: {
     borderRadius: 50,
     backgroundColor: 'grey',

@@ -1,4 +1,4 @@
-export default function TreeChart(data){
+export default function TreeChart(data, backColor){
   return `
   <!DOCTYPE html>
   <html style="height:100%; width: 100%;">
@@ -13,8 +13,13 @@ export default function TreeChart(data){
   </head>
    
   <body style="height:100%; width: 100%;">
-    <div id="visualisation" style="height:100%; max-height:100%; width: 100%; max-width:100%">
+	<style>
+		.customStyle: {background-color: ${backColor} !important}
+	</style>
+	
+    <div class="customStyle" id="visualisation" style="height:100%; max-height:100%; width: 100%; max-width:100%">
     </div>
+
     <script>
       var data = ${JSON.stringify(data)};
       

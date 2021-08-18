@@ -53,12 +53,12 @@ export default class Dashboard extends Component {
         return item;
       });
       return (
-        <View style={styles.container}>
+        <View style={[this.props.colorMode, styles.container]}>
           <FlatList
             data={dashboardDataArray}
             keyExtractor={item => 'dashboardData' + item[0]}
             renderItem={({item}) => (
-              <Text>{`${item[0]} : ${JSON.stringify(item[1])} \n`}</Text>
+              <Text style={this.props.colorMode}>{`${item[0]} : ${JSON.stringify(item[1])} \n`}</Text>
             )}
           />
         </View>
@@ -70,5 +70,7 @@ export default class Dashboard extends Component {
 const styles = StyleSheet.create({
   container: {
     ...MainStyles.container,
+    borderRadius:0,
+    margin: 0
   },
 });

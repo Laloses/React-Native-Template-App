@@ -9,7 +9,12 @@ export default class DashboardTabs extends Component {
   render() {
     return (
       <Tabs.Navigator
-        screenOptions={{headerShown: false, tabBarStyle: styles.tabStyle}}>
+        screenOptions={{
+          headerShown: false, 
+          tabBarStyle: {
+            backgroundColor: this.props.colorMode.backgroundColor,
+            ...styles.tabStyle}
+        }}>
         <Tabs.Screen
           name="resumenDashboard"
           options={{
@@ -25,6 +30,7 @@ export default class DashboardTabs extends Component {
             <DashboardStack
               handleErrorMessage={this.props.handleErrorMessage}
               handleLoading={this.props.handleLoading}
+              colorMode={this.props.colorMode}
             />
           )}
         </Tabs.Screen>
@@ -44,6 +50,7 @@ export default class DashboardTabs extends Component {
             <MapaGrafico
               handleErrorMessage={this.props.handleErrorMessage}
               handleLoading={this.props.handleLoading}
+              colorMode={this.props.colorMode}
             />
           )}
         </Tabs.Screen>

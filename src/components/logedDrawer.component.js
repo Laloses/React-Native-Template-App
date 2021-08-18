@@ -20,15 +20,16 @@ export default class LogedDrawer extends Component {
       <Drawer.Navigator
         initialRouteName="Screen_1"
         drawerType={isLargeScreen ? 'permanent' : 'slide'}
-        drawerStyle={isLargeScreen ? styles.drawerStyle : null}
+        drawerStyle={[this.props.colorMode, isLargeScreen ? styles.drawerStyle : null]}
         drawerContent={props =>
-          CustomDrawerContent(props, this.props.handleLogedStatus)
+          CustomDrawerContent(props, this.props.handleLogedStatus, this.props.colorMode)
         }>
         <Drawer.Screen name="Screen_1" options={{title: 'Dashboard'}}>
           {() => (
             <DashboardTabs
               handleErrorMessage={this.props.handleErrorMessage}
               handleLoading={this.props.handleLoading}
+              colorMode={this.props.colorMode}
             />
           )}
         </Drawer.Screen>
@@ -38,6 +39,7 @@ export default class LogedDrawer extends Component {
             <OtherStack
               handleErrorMessage={this.props.handleErrorMessage}
               handleLoading={this.props.handleLoading}
+              colorMode={this.props.colorMode}
             />
           )}
         </Drawer.Screen>
@@ -46,14 +48,17 @@ export default class LogedDrawer extends Component {
   }
 }
 
-function CustomDrawerContent(props, handleLogedStatus) {
+function CustomDrawerContent(props, handleLogedStatus, colorMode) {
   return (
     <DrawerContentScrollView
       {...props}
       contentContainerStyle={styles.containerDrawerScrollView}>
-      <PressableProfile {...props} />
+      <PressableProfile {...props} colorMode={colorMode} />
       <ScrollView style={styles.containerListItemsDrawer}>
-        <DrawerItemList {...props} />
+        <DrawerItemList {...props} 
+          activeBackgroundColor="#d1e6f0"
+          activeTintColor="black"
+          inactiveTintColor={colorMode.color} />
       </ScrollView>
       <DrawerItem
         label="Salir"
