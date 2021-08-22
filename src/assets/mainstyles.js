@@ -1,12 +1,12 @@
 import {StyleSheet} from 'react-native';
 
 export const MainStyles = StyleSheet.create({
-  darkMode:{
+  darkMode: {
     backgroundColor: 'black',
     borderColor: '#9c9c9c',
     color: '#FFFFFF',
   },
-  clearMode:{
+  clearMode: {
     backgroundColor: 'white',
     borderColor: '#6b6b6b',
     color: '#121212',
@@ -16,9 +16,7 @@ export const MainStyles = StyleSheet.create({
     margin: 5,
     padding: 5,
     borderRadius: 25,
-    borderStyle: 'dotted',
     borderWidth: 0.5,
-    borderColor: 'black',
   },
   justifyCenter: {
     justifyContent: 'center',
@@ -32,7 +30,7 @@ export const MainStyles = StyleSheet.create({
     borderWidth: 1,
     width: 100,
   },
-  placeholderColor: {color: "#adadad"},
+  placeholderColor: {color: '#adadad'},
   toast: {
     borderRadius: 50,
     backgroundColor: 'grey',

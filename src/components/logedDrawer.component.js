@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
-import {Dimensions, ScrollView, StyleSheet} from 'react-native';
+import {Dimensions, Image, ScrollView, StyleSheet} from 'react-native';
 import {
   createDrawerNavigator,
   DrawerItemList,
   DrawerItem,
   DrawerContentScrollView,
 } from '@react-navigation/drawer';
-import OtherStack from './other.stack';
+import SettingsComponent from './settings.component';
 import PressableProfile from './pressableProfile.component';
 import DashboardTabs from './dashboard.tabs.js';
 
@@ -20,11 +20,31 @@ export default class LogedDrawer extends Component {
       <Drawer.Navigator
         initialRouteName="Screen_1"
         drawerType={isLargeScreen ? 'permanent' : 'slide'}
-        drawerStyle={[this.props.colorMode, isLargeScreen ? styles.drawerStyle : null]}
+        drawerStyle={[
+          this.props.colorMode,
+          isLargeScreen ? styles.drawerStyle : null,
+        ]}
         drawerContent={props =>
-          CustomDrawerContent(props, this.props.handleLogedStatus, this.props.colorMode)
+          CustomDrawerContent(
+            props,
+            this.props.handleLogedStatus,
+            this.props.colorMode,
+          )
         }>
-        <Drawer.Screen name="Screen_1" options={{title: 'Dashboard'}}>
+        <Drawer.Screen
+          name="Screen_1"
+          options={{
+            title: 'Dashboard',
+            headerShown: true,
+            headerStyle: [
+              {
+                backgroundColor: this.props.colorMode.backgroundColor,
+                ...styles.headerStack,
+              },
+            ],
+            headerTintColor: this.props.colorMode.color,
+            headerTitleAlign: 'center',
+          }}>
           {() => (
             <DashboardTabs
               handleErrorMessage={this.props.handleErrorMessage}
@@ -34,12 +54,38 @@ export default class LogedDrawer extends Component {
           )}
         </Drawer.Screen>
 
-        <Drawer.Screen name="Screen_2" options={{title: 'Submenu 2'}}>
+        <Drawer.Screen
+          name="Settings"
+          options={{
+            title: 'Ajustes',
+            headerTitle: 'Ajustes',
+            headerShown: true,
+            headerStyle: [
+              {
+                backgroundColor: this.props.colorMode.backgroundColor,
+                ...styles.headerStack,
+              },
+            ],
+            headerTintColor: this.props.colorMode.color,
+            headerTitleAlign: 'center',
+            drawerIcon: ({focused, color, size}) => (
+              <Image
+                style={{tintColor: color, width: size, height: size}}
+                source={
+                  this.props.colorMode.backgroundColor === 'black'
+                    ? require('../assets/img/settingWhite.png')
+                    : require('../assets/img/setting.png')
+                }
+              />
+            ),
+          }}>
           {() => (
-            <OtherStack
+            <SettingsComponent
               handleErrorMessage={this.props.handleErrorMessage}
               handleLoading={this.props.handleLoading}
+              handleSettingsChange={this.props.handleSettingsChange}
               colorMode={this.props.colorMode}
+              autoColorIsDark={this.props.autoColorIsDark}
             />
           )}
         </Drawer.Screen>
@@ -55,10 +101,12 @@ function CustomDrawerContent(props, handleLogedStatus, colorMode) {
       contentContainerStyle={styles.containerDrawerScrollView}>
       <PressableProfile {...props} colorMode={colorMode} />
       <ScrollView style={styles.containerListItemsDrawer}>
-        <DrawerItemList {...props} 
+        <DrawerItemList
+          {...props}
           activeBackgroundColor="#d1e6f0"
           activeTintColor="black"
-          inactiveTintColor={colorMode.color} />
+          inactiveTintColor={colorMode.color}
+        />
       </ScrollView>
       <DrawerItem
         label="Salir"
@@ -72,6 +120,9 @@ function CustomDrawerContent(props, handleLogedStatus, colorMode) {
 }
 
 const styles = StyleSheet.create({
+  headerStack: {
+    borderBottomWidth: 0.5,
+  },
   drawerStyle: {
     width: 'auto',
   },

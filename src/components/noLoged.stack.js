@@ -1,24 +1,28 @@
 import React, {Component} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import LoginComponent from './login.component';
-import { MainStyles } from '../assets/mainstyles';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 
 const Stack = createStackNavigator();
 
 export default class NoLogedStack extends Component {
   render() {
     return (
-      <Stack.Navigator initialRouteName="Screen_1" options={{
-            headerStyle: [{backgroundColor : this.props.colorMode.backgroundColor}],
-            headerTintColor: this.props.colorMode.color,
-            headerTitleAlign: styles.headerStyle.textAlign
+      <Stack.Navigator
+        initialRouteName="Screen_1"
+        screenOptions={{
+          headerStyle: [
+            styles.headerStyle,
+            {backgroundColor: this.props.colorMode.backgroundColor},
+          ],
+          headerTintColor: this.props.colorMode.color,
+          headerTitleAlign: 'center',
         }}>
-        <Stack.Screen name="Screen_1" 
+        <Stack.Screen
+          name="Screen_1"
           options={{
-            title: 'Iniciar sesión', 
-            }}>
+            title: 'Iniciar sesión',
+          }}>
           {navigation => (
             <LoginComponent
               navigation={navigation.navigation}
@@ -37,6 +41,6 @@ export default class NoLogedStack extends Component {
 
 const styles = StyleSheet.create({
   headerStyle: {
-    textAlign: 'center'
-  }
-})
+    borderBottomWidth: 0.5,
+  },
+});

@@ -95,7 +95,7 @@ export default class LoginComponent extends Component {
   };
   render() {
     return (
-      <SafeAreaView style={[ this.props.colorMode, styles.container]}>
+      <SafeAreaView style={[this.props.colorMode, styles.container]}>
         <Text style={this.props.colorMode}>Usuario</Text>
         <TextInput
           style={[this.props.colorMode, MainStyles.input]}
@@ -115,14 +115,19 @@ export default class LoginComponent extends Component {
         />
         <Text style={this.props.colorMode}>Mantener sesión.</Text>
         <CheckBox
-          tintColors={{true: this.props.colorMode.color, false:this.props.colorMode.color}} //Android
+          tintColors={{
+            true: this.props.colorMode.color,
+            false: this.props.colorMode.color,
+          }} //Android
           tintColor={this.props.colorMode.color} //IOS
           onTintColor={this.props.colorMode.color} //IOS
           disabled={false}
           value={this.state.stayLoged}
           onValueChange={newValue => this.hanldeStayLoged(newValue)}
         />
-        <Pressable style={[this.props.colorMode, MainStyles.btn]} onPress={this.handleLogIn}>
+        <Pressable
+          style={[this.props.colorMode, MainStyles.btn]}
+          onPress={this.handleLogIn}>
           <Text style={this.props.colorMode}>Iniciar sesión</Text>
         </Pressable>
       </SafeAreaView>
@@ -132,9 +137,10 @@ export default class LoginComponent extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    ...MainStyles.container, 
+    ...MainStyles.container,
     ...MainStyles.justifyCenter,
-    borderRadius:0,
-    margin:0
+    borderRadius: 0,
+    margin: 0,
+    borderWidth: 0,
   },
 });

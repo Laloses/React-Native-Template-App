@@ -29,14 +29,17 @@ export default class Dashboard extends Component {
         () => this.props.handleLoading(false),
       );
     } catch (error) {
-      console.log('Error dashboard data', error);
-      alert('Error dashboard data', error);
+      typeof error === 'string'
+        ? this.handleErrorMessage(error, 'warning')
+        : this.handleErrorMessage(error, 'red');
+      this.handleLoading(false);
+      console.log('Error getDashboardData::Component', error);
     }
   };
   hanldePassInput = input => {
     this.state.pass = input;
     //Para moverse entre screens
-    this.props.navigation?.replace('Screen_2', {
+    this.props.navigation?.navigate('Screen_2', {
       userData: {...this.userData},
       nameScreen: `Screen de ${this.userData.FirstName}`,
     });
@@ -58,7 +61,9 @@ export default class Dashboard extends Component {
             data={dashboardDataArray}
             keyExtractor={item => 'dashboardData' + item[0]}
             renderItem={({item}) => (
-              <Text style={this.props.colorMode}>{`${item[0]} : ${JSON.stringify(item[1])} \n`}</Text>
+              <Text style={this.props.colorMode}>{`${
+                item[0]
+              } : ${JSON.stringify(item[1])} \n`}</Text>
             )}
           />
         </View>
@@ -70,7 +75,8 @@ export default class Dashboard extends Component {
 const styles = StyleSheet.create({
   container: {
     ...MainStyles.container,
-    borderRadius:0,
-    margin: 0
+    borderRadius: 0,
+    margin: 0,
+    borderWidth: 0,
   },
 });

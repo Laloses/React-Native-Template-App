@@ -10,10 +10,11 @@ export default class DashboardTabs extends Component {
     return (
       <Tabs.Navigator
         screenOptions={{
-          headerShown: false, 
+          headerShown: false,
           tabBarStyle: {
             backgroundColor: this.props.colorMode.backgroundColor,
-            ...styles.tabStyle}
+            ...styles.tabStyle,
+          },
         }}>
         <Tabs.Screen
           name="resumenDashboard"
@@ -60,5 +61,5 @@ export default class DashboardTabs extends Component {
 }
 
 const styles = new StyleSheet.create({
-  tabStyle: {borderTopWidth: 1},
+  tabStyle: {borderTopWidth: 0.5},
 });

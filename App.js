@@ -7,7 +7,7 @@ import NoLogedStack from './src/components/noLoged.stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import API from './src/libs/API';
 import LoadingComponent from './src/components/loading.component';
-import { MainStyles } from './src/assets/mainstyles';
+import {MainStyles} from './src/assets/mainstyles';
 
 export default class App extends Component {
   currentHours = new Date().getHours();
@@ -16,7 +16,14 @@ export default class App extends Component {
     errorMessage: null,
     errorProblem: null,
     loading: false,
-    colorMode: this.currentHours > 7 && this.currentHours < 20 ? MainStyles.darkMode : MainStyles.darkMode,
+    autoColorMode:
+      this.currentHours > 7 && this.currentHours < 20
+        ? MainStyles.clearMode
+        : MainStyles.darkMode,
+    colorMode:
+      this.currentHours > 7 && this.currentHours < 20
+        ? MainStyles.clearMode
+        : MainStyles.darkMode,
   };
   componentDidMount = async () => {
     await this.isLoged();
@@ -27,28 +34,48 @@ export default class App extends Component {
     localLoged === 'true' ? (localLoged = true) : (localLoged = false);
     this.setState({...this.state, loged: localLoged});
   };
-  checkUserSettings= async() =>{
+  checkUserSettings = async () => {
     try {
       this.handleLoading(true);
-      let userSettings = JSON.parse(await AsyncStorage.getItem('userSettings'));
-      
-      if(userSettings && userSettings.keys())
-      userSettings.keys().forEach(key => {
-        switch (key) {
-          case 'colorMode':
-            let colors = userSettings[key] === 'clear' ? MainStyles.clearMode : MainStyles.darkMode;
-            this.setState({colorMode: colors})
-            break;
-          default:
-            break;
-        }
-      });
+      let userSettings = JSON.parse(await AsyncStorage.getItem('settings'));
+
+      if (userSettings && Object.keys(userSettings).length > 0) {
+        Object.keys(userSettings).forEach(key => {
+          switch (key) {
+            case 'darkMode':
+              //Activarlo solo si el usuario lo tiene diferente al automatico
+              let autoColorIsDark =
+                this.state.autoColorMode.backgroundColor === 'black';
+              console.log('autoColorIsDark', autoColorIsDark);
+              console.log(
+                'userSettings.darkMode.value',
+                userSettings.darkMode.value,
+              );
+              //Si es de noche siempre activarlo
+              if (autoColorIsDark) {
+                this.setState({colorMode: MainStyles.darkMode});
+              } else {
+                if (userSettings.darkMode.value !== autoColorIsDark) {
+                  let colors =
+                    userSettings.darkMode.value === false
+                      ? MainStyles.clearMode
+                      : MainStyles.darkMode;
+                  this.setState({colorMode: colors});
+                } else {
+                  this.setState({colorMode: MainStyles.clearMode});
+                }
+              }
+              break;
+            default:
+              break;
+          }
+        });
+      }
       this.handleLoading(false);
     } catch (error) {
       typeof error === 'string'
         ? this.handleErrorMessage(error, 'warning')
         : this.handleErrorMessage(error, 'red');
-
       this.handleLoading(false);
       console.log('error en App::checkUserSettings', error);
     }
@@ -95,6 +122,7 @@ export default class App extends Component {
     );
   };
   render() {
+    this.currentHours = new Date().getHours();
     const {loged} = this.state;
     return (
       <NavigationContainer>
@@ -110,7 +138,11 @@ export default class App extends Component {
             handleErrorMessage={this.handleErrorMessage}
             handleLogedStatus={this.handleLogedStatus}
             handleLoading={this.handleLoading}
+            handleSettingsChange={this.checkUserSettings}
             colorMode={this.state.colorMode}
+            autoColorIsDark={
+              this.state.autoColorMode.backgroundColor === 'black'
+            }
           />
         )}
         <ErrorNotify
