@@ -1,120 +1,126 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, {Component} from 'react';
+import React, {Component, useEffect, useState} from 'react';
 import {Image, StyleSheet, Switch, Text, View} from 'react-native';
 import {MainStyles} from '../assets/mainstyles';
+import {
+  getLocalSettings,
+  setLocalSettings,
+} from '../services/app.local.storage';
 
-export default class SettingsComponent extends Component {
-  state = {
-    darkMode: {value: false},
+const SettingsComponent = ({
+  handleErrorMessage,
+  handleLoading,
+  handleSettingsChange,
+  colorMode,
+  autoColorIsDark,
+}) => {
+  const [darkMode, setDarkMode] = useState({value: false});
+  //DidMount
+  useEffect(() => {
+    const getSettingsData = async () => {
+      handleLoading(true);
+      let localSettings = getLocalSettings();
+      if (localSettings.darkMode) {
+        setDarkMode(localSettings.darkMode);
+      }
+      handleLoading(false);
+    };
+    getSettingsData();
+  }, []);
+  const setSettingsData = async data => {
+    handleLoading(true);
+    setLocalSettings(data);
+    handleLoading(false);
   };
-  componentDidMount = async () => {
-    await this.getSettingsData();
+  const handleSwitchDarkMode = async value => {
+    setDarkMode({value: value});
+    await setSettingsData({darkMode});
+    await handleSettingsChange();
   };
-  getSettingsData = async () => {
-    this.props.handleLoading(true);
-    this.setState(JSON.parse(await AsyncStorage.getItem('settings')));
-    this.props.handleLoading(false);
-  };
-  setSettingsData = async data => {
-    this.props.handleLoading(true);
-    await AsyncStorage.setItem('settings', JSON.stringify(data));
-    this.props.handleLoading(false);
-  };
-  handleSwitchDarkMode = value => {
-    this.setState(
-      {
-        darkMode: {value: value},
-      },
-      async () => {
-        await this.setSettingsData(this.state);
-        await this.props.handleSettingsChange();
-      },
-    );
-  };
-  render() {
-    // console.log('props SettingsComponent', this.props);
-    const darkModeValue = this.state.darkMode.value;
-    return (
-      <View style={[styles.container, this.props.colorMode]}>
-        <ItemSetting
-          nameSetting={'Modo oscuro'}
-          colorMode={this.props.colorMode}
-          switchValue={darkModeValue}
-          disableSetting={this.props.autoColorIsDark}
-          handleSwitch={this.handleSwitchDarkMode}
-          extraMessage={'Modo automático activado'}>
-          <Image
-            style={styles.icon}
-            source={
-              this.props.colorMode.backgroundColor === 'black'
-                ? require('../assets/img/settingWhite.png')
-                : require('../assets/img/setting.png')
-            }
-          />
-        </ItemSetting>
+  return (
+    <View style={[styles.container, colorMode]}>
+      <ItemSetting
+        nameSetting={'Modo oscuro'}
+        colorMode={colorMode}
+        switchValue={darkMode.value}
+        disableSetting={autoColorIsDark}
+        handleSwitch={handleSwitchDarkMode}
+        extraMessage={'Modo automático activado'}>
+        <Image
+          style={styles.icon}
+          source={
+            colorMode.backgroundColor === 'black'
+              ? require('../assets/img/settingWhite.png')
+              : require('../assets/img/setting.png')
+          }
+        />
+      </ItemSetting>
 
-        <ItemSetting
-          nameSetting={'Otro Ajuste'}
-          colorMode={this.props.colorMode}
-          switchValue={false}
-          disableSetting={true}
-          handleSwitch={() => {}}
-          extraMessage={'Mensaje explicativo'}>
-          <Image
-            style={styles.icon}
-            source={
-              this.props.colorMode.backgroundColor === 'black'
-                ? require('../assets/img/settingWhite.png')
-                : require('../assets/img/setting.png')
-            }
-          />
-        </ItemSetting>
-      </View>
-    );
-  }
-}
+      <ItemSetting
+        nameSetting={'Otro Ajuste'}
+        colorMode={colorMode}
+        switchValue={false}
+        disableSetting={true}
+        handleSwitch={() => {}}
+        extraMessage={'Mensaje explicativo'}>
+        <Image
+          style={styles.icon}
+          source={
+            colorMode.backgroundColor === 'black'
+              ? require('../assets/img/settingWhite.png')
+              : require('../assets/img/setting.png')
+          }
+        />
+      </ItemSetting>
+    </View>
+  );
+};
+export default SettingsComponent;
 
-class ItemSetting extends Component {
-  render() {
-    return (
-      <View>
-        <View
-          style={
-            this.props.disableSetting
-              ? [styles.item, styles.itemGrey]
-              : [styles.item, this.props.colorMode]
-          }>
-          <View style={styles.leftItem}>
-            {this.props.children}
-            <Text
-              style={
-                this.props.disableSetting
-                  ? [this.props.colorMode, styles.textItem, styles.itemGrey]
-                  : [this.props.colorMode, styles.textItem]
-              }>
-              {this.props.nameSetting}
-            </Text>
-          </View>
-          <Switch
-            trackColor={{false: '#767577', true: '#81b0ff'}}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={this.props.handleSwitch}
-            value={this.props.switchValue}
-            disabled={this.props.disableSetting}
-          />
+const ItemSetting = ({
+  children,
+  nameSetting,
+  colorMode,
+  switchValue,
+  disableSetting,
+  handleSwitch,
+  extraMessage,
+}) => {
+  return (
+    <View>
+      <View
+        style={
+          disableSetting
+            ? [styles.item, styles.itemGrey]
+            : [styles.item, colorMode]
+        }>
+        <View style={styles.leftItem}>
+          {children}
+          <Text
+            style={
+              disableSetting
+                ? [colorMode, styles.textItem, styles.itemGrey]
+                : [colorMode, styles.textItem]
+            }>
+            {nameSetting}
+          </Text>
         </View>
-        <Text
-          style={
-            this.props.disableSetting
-              ? [this.props.colorMode, styles.msgItem]
-              : MainStyles.hidden
-          }>
-          {this.props.extraMessage}
-        </Text>
+        <Switch
+          trackColor={{false: '#767577', true: '#81b0ff'}}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={handleSwitch}
+          value={switchValue}
+          disabled={disableSetting}
+        />
       </View>
-    );
-  }
-}
+      <Text
+        style={
+          disableSetting ? [colorMode, styles.msgItem] : MainStyles.hidden
+        }>
+        {extraMessage}
+      </Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

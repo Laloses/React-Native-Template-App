@@ -1,6 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import CheckBox from '@react-native-community/checkbox';
-import React, {Component} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Pressable,
   SafeAreaView,
@@ -10,46 +9,47 @@ import {
 } from 'react-native';
 import {MainStyles} from '../assets/mainstyles';
 import API from '../libs/API';
+import {
+  getLocalStayLoged,
+  setLocalStayLoged,
+} from '../services/app.local.storage';
 
-export default class LoginComponent extends Component {
-  state = {
-    userInput: '',
-    passInput: '',
-    stayLoged: false,
-  };
-  componentDidMount = async () => {
-    await this.isStayLoged();
-  };
-  isStayLoged = async () => {
-    try {
-      this.props.handleLoading(true);
-      let stayLogedJSON = JSON.parse(await AsyncStorage.getItem('stayLoged'));
-      if (stayLogedJSON && stayLogedJSON.value === true) {
-        this.setState({
-          ...this.state,
-          userInput: stayLogedJSON.user,
-          passInput: stayLogedJSON.pass,
-          stayLoged: true,
-        });
-        await this.handleLogIn();
+const LoginComponent = ({
+  navigation,
+  route,
+  handleErrorMessage,
+  handleLogedStatus,
+  handleLoading,
+  colorMode,
+}) => {
+  const [userInput, setUserInput] = useState('');
+  const [passInput, setPassInput] = useState('');
+  const [stayLoged, setStayLoged] = useState(false);
+  //mount
+  useEffect(() => {
+    const isStayLoged = async () => {
+      try {
+        handleLoading(true);
+        let stayLogedJSON = await getLocalStayLoged();
+        if (stayLogedJSON && stayLogedJSON.value === true) {
+          await handleLogIn(stayLogedJSON.user, stayLogedJSON.pass);
+        }
+        handleLoading(false);
+      } catch (error) {
+        typeof error === 'string'
+          ? handleErrorMessage(error, 'warning')
+          : handleErrorMessage(error, 'red');
+
+        handleLoading(false);
+        console.log('error en LoginComponent::isStayLoged', error);
       }
-      this.props.handleLoading(false);
-    } catch (error) {
-      typeof error === 'string'
-        ? this.props.handleErrorMessage(error, 'warning')
-        : this.props.handleErrorMessage(error, 'red');
-
-      this.props.handleLoading(false);
-      console.log('error en LoginComponent::isStayLoged', error);
-    }
-  };
-  handleLogIn = async () => {
+    };
+    isStayLoged();
+  }, []); //mount
+  const handleLogIn = async (user, pass) => {
     try {
-      this.props.handleLoading(true);
-      let res = await API.instance.login(
-        this.state.userInput,
-        this.state.passInput,
-      );
+      handleLoading(true);
+      let res = await API.instance.login(user, pass);
       console.log('return login', res);
       //Correcto
       if (typeof res === 'object') {
@@ -58,82 +58,65 @@ export default class LoginComponent extends Component {
           delete res.Password;
         }
         //Verficar si mantiene sesion
-        if (this.state.stayLoged) {
+        if (stayLoged) {
           //Guardar datos de sesión
-          await AsyncStorage.setItem(
-            'stayLoged',
-            JSON.stringify({
-              value: true,
-              user: this.state.userInput,
-              pass: this.state.passInput,
-            }),
-          );
+          await setLocalStayLoged(user, pass);
         }
         //Termina la carga
-        this.props.handleLoading(false);
+        handleLoading(false);
         //Cambiamos el status de logeo de la app, y guardamos la info
-        this.props.handleLogedStatus(true, res);
+        handleLogedStatus(true, res);
       }
     } catch (error) {
       //Malas credenciales
       typeof error === 'string'
-        ? this.props.handleErrorMessage(error, 'warning')
-        : this.props.handleErrorMessage(error, 'red');
+        ? handleErrorMessage(error, 'warning')
+        : handleErrorMessage(error, 'red');
 
-      this.props.handleLoading(false);
+      handleLoading(false);
       console.log('Error al logear', error);
     }
   };
-  handleUserInput = input => {
-    this.setState({userInput: input});
-  };
-  hanldePassInput = input => {
-    this.setState({passInput: input});
-  };
-  hanldeStayLoged = input => {
-    this.setState({stayLoged: input});
-  };
-  render() {
-    return (
-      <SafeAreaView style={[this.props.colorMode, styles.container]}>
-        <Text style={this.props.colorMode}>Usuario</Text>
-        <TextInput
-          style={[this.props.colorMode, MainStyles.input]}
-          onChangeText={this.handleUserInput}
-          placeholder="Mi usuario"
-          placeholderTextColor={MainStyles.placeholderColor.color}
-          value={this.state.userInput || ''}
-        />
-        <Text>Contraseña</Text>
-        <TextInput
-          textContentType="password"
-          style={[this.props.colorMode, MainStyles.input]}
-          onChangeText={this.hanldePassInput}
-          placeholder="Mi contraseña"
-          placeholderTextColor={MainStyles.placeholderColor.color}
-          value={this.state.passInput || ''}
-        />
-        <Text style={this.props.colorMode}>Mantener sesión.</Text>
-        <CheckBox
-          tintColors={{
-            true: this.props.colorMode.color,
-            false: this.props.colorMode.color,
-          }} //Android
-          tintColor={this.props.colorMode.color} //IOS
-          onTintColor={this.props.colorMode.color} //IOS
-          disabled={false}
-          value={this.state.stayLoged}
-          onValueChange={newValue => this.hanldeStayLoged(newValue)}
-        />
-        <Pressable
-          style={[this.props.colorMode, MainStyles.btn]}
-          onPress={this.handleLogIn}>
-          <Text style={this.props.colorMode}>Iniciar sesión</Text>
-        </Pressable>
-      </SafeAreaView>
-    );
-  }
-}
+  return (
+    <SafeAreaView style={[colorMode, styles.container]}>
+      <Text style={colorMode}>Usuario</Text>
+      <TextInput
+        style={[colorMode, MainStyles.input]}
+        onChangeText={value => setUserInput(value)}
+        placeholder="Mi usuario"
+        placeholderTextColor={MainStyles.placeholderColor.color}
+        value={userInput || ''}
+      />
+      <Text>Contraseña</Text>
+      <TextInput
+        textContentType="password"
+        style={[colorMode, MainStyles.input]}
+        onChangeText={value => setPassInput(value)}
+        placeholder="Mi contraseña"
+        placeholderTextColor={MainStyles.placeholderColor.color}
+        value={passInput || ''}
+      />
+      <Text style={colorMode}>Mantener sesión.</Text>
+      <CheckBox
+        tintColors={{
+          true: colorMode.color,
+          false: colorMode.color,
+        }} //Android
+        tintColor={colorMode.color} //IOS
+        onTintColor={colorMode.color} //IOS
+        disabled={false}
+        value={stayLoged}
+        onValueChange={newValue => setStayLoged(newValue)}
+      />
+      <Pressable
+        style={[colorMode, MainStyles.btn]}
+        onPress={() => handleLogIn(userInput, passInput)}>
+        <Text style={colorMode}>Iniciar sesión</Text>
+      </Pressable>
+    </SafeAreaView>
+  );
+};
+export default LoginComponent;
 
 const styles = StyleSheet.create({
   container: {

@@ -1,51 +1,54 @@
 import 'react-native-gesture-handler';
-import React, {Component} from 'react';
+import React, {Component, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import LogedDrawer from './src/components/logedDrawer.component';
+import LogedDrawer from './src/components/drawer/loged.drawer';
 import ErrorNotify from './src/components/errorNotify.component';
-import NoLogedStack from './src/components/noLoged.stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import NoLogedStack from './src/components/stack/noLoged.stack';
 import API from './src/libs/API';
 import LoadingComponent from './src/components/loading.component';
 import {MainStyles} from './src/assets/mainstyles';
+import {
+  getLocalSettings,
+  getLocalStayLoged,
+  removeLocalData,
+  setLocalUserData,
+} from './src/services/app.local.storage';
 
-export default class App extends Component {
-  currentHours = new Date().getHours();
-  state = {
-    loged: false,
-    errorMessage: null,
-    errorProblem: null,
-    loading: false,
-    autoColorMode:
-      this.currentHours > 7 && this.currentHours < 20
-        ? MainStyles.clearMode
-        : MainStyles.darkMode,
-    colorMode:
-      this.currentHours > 7 && this.currentHours < 20
-        ? MainStyles.clearMode
-        : MainStyles.darkMode,
-  };
-  componentDidMount = async () => {
-    await this.isLoged();
-    await this.checkUserSettings();
-  };
-  isLoged = async () => {
-    let localLoged = await AsyncStorage.getItem('loged');
-    localLoged === 'true' ? (localLoged = true) : (localLoged = false);
-    this.setState({...this.state, loged: localLoged});
-  };
-  checkUserSettings = async () => {
+const App = () => {
+  const currentHours = new Date().getHours();
+  const [loged, setLoged] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [errorProblem, setErrorProblem] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [colorMode, setColorMode] = useState(MainStyles.clearMode);
+  const autoColorMode =
+    currentHours > 7 && currentHours < 20
+      ? MainStyles.clearMode
+      : MainStyles.darkMode;
+  //mount
+  useEffect(() => {
+    const isLoged = async () => {
+      let localLoged = await getLocalStayLoged();
+      setLoged(localLoged.value);
+    };
+    isLoged();
+    checkUserSettings();
+  }, []); //[to mount]
+  const checkUserSettings = async () => {
     try {
-      this.handleLoading(true);
-      let userSettings = JSON.parse(await AsyncStorage.getItem('settings'));
+      setLoading(true);
+      let userSettings = await getLocalSettings();
 
+      //Activarlo solo si el usuario lo tiene diferente al automatico
+      let autoColorIsDark = autoColorMode.backgroundColor === 'black';
+      //Si es de noche siempre activarlo
+      if (autoColorIsDark) {
+        setColorMode(MainStyles.darkMode);
+      }
       if (userSettings && Object.keys(userSettings).length > 0) {
         Object.keys(userSettings).forEach(key => {
           switch (key) {
             case 'darkMode':
-              //Activarlo solo si el usuario lo tiene diferente al automatico
-              let autoColorIsDark =
-                this.state.autoColorMode.backgroundColor === 'black';
               console.log('autoColorIsDark', autoColorIsDark);
               console.log(
                 'userSettings.darkMode.value',
@@ -53,16 +56,14 @@ export default class App extends Component {
               );
               //Si es de noche siempre activarlo
               if (autoColorIsDark) {
-                this.setState({colorMode: MainStyles.darkMode});
-              } else {
                 if (userSettings.darkMode.value !== autoColorIsDark) {
                   let colors =
                     userSettings.darkMode.value === false
                       ? MainStyles.clearMode
                       : MainStyles.darkMode;
-                  this.setState({colorMode: colors});
+                  setColorMode(colors);
                 } else {
-                  this.setState({colorMode: MainStyles.clearMode});
+                  setColorMode(MainStyles.clearMode);
                 }
               }
               break;
@@ -71,86 +72,68 @@ export default class App extends Component {
           }
         });
       }
-      this.handleLoading(false);
+      setLoading(false);
     } catch (error) {
       typeof error === 'string'
-        ? this.handleErrorMessage(error, 'warning')
-        : this.handleErrorMessage(error, 'red');
-      this.handleLoading(false);
+        ? handleErrorMessage(error, 'warning')
+        : handleErrorMessage(error, 'red');
+      setLoading(false);
       console.log('error en App::checkUserSettings', error);
     }
   };
-  handleErrorMessage = (msg, problem) => {
-    this.setState({errorMessage: msg, errorProblem: problem}, () => {
-      setTimeout(() => {
-        this.setState({errorMessage: null});
-      }, 3000);
-    });
+  const handleErrorMessage = (msg, problem) => {
+    setErrorMessage(msg);
+    setErrorProblem(problem);
+    setTimeout(() => {
+      setErrorMessage(null);
+    }, 3000);
   };
-  handleLoading = value => {
-    this.setState({...this.state, loading: value});
-  };
-  handleLogedStatus = async (statusBool, data) => {
-    this.handleLoading(true);
+  const handleLogedStatus = async (statusBool, data) => {
+    setLoading(true);
     //Si fue login guardar data
     if (statusBool === true) {
-      await AsyncStorage.setItem(
-        'userData',
-        data ? JSON.stringify(data) : null,
-      );
+      setLocalUserData(data);
     }
     //Si fue logout cerrar sesion en el servidor
     else if (statusBool === false) {
       try {
         await API.instance.logout();
-        await AsyncStorage.multiRemove(['userData', 'loged', 'stayLoged']);
+        await removeLocalData();
       } catch (error) {
         if (typeof error === 'string') {
-          this.handleErrorMessage(error);
-          this.handleLoading(false);
+          handleErrorMessage(error);
+          setLoading(false);
         }
         console.log('Error deslogear', error);
       }
     }
-    this.setState(
-      {
-        loged: statusBool,
-      },
-      function () {
-        this.handleLoading(false);
-      },
-    );
+    setLoged(statusBool);
+    setTimeout(() => {
+      setLoading(false);
+    }, 100);
   };
-  render() {
-    this.currentHours = new Date().getHours();
-    const {loged} = this.state;
-    return (
-      <NavigationContainer>
-        {!loged ? (
-          <NoLogedStack
-            handleErrorMessage={this.handleErrorMessage}
-            handleLogedStatus={this.handleLogedStatus}
-            handleLoading={this.handleLoading}
-            colorMode={this.state.colorMode}
-          />
-        ) : (
-          <LogedDrawer
-            handleErrorMessage={this.handleErrorMessage}
-            handleLogedStatus={this.handleLogedStatus}
-            handleLoading={this.handleLoading}
-            handleSettingsChange={this.checkUserSettings}
-            colorMode={this.state.colorMode}
-            autoColorIsDark={
-              this.state.autoColorMode.backgroundColor === 'black'
-            }
-          />
-        )}
-        <ErrorNotify
-          message={this.state.errorMessage}
-          problem={this.state.errorProblem}
+  return (
+    <NavigationContainer>
+      {!loged ? (
+        <NoLogedStack
+          handleErrorMessage={handleErrorMessage}
+          handleLogedStatus={handleLogedStatus}
+          handleLoading={setLoading}
+          colorMode={colorMode}
         />
-        <LoadingComponent loading={this.state.loading} />
-      </NavigationContainer>
-    );
-  }
-}
+      ) : (
+        <LogedDrawer
+          handleErrorMessage={handleErrorMessage}
+          handleLogedStatus={handleLogedStatus}
+          handleLoading={setLoading}
+          handleSettingsChange={checkUserSettings}
+          colorMode={colorMode}
+          autoColorIsDark={autoColorMode.backgroundColor === 'black'}
+        />
+      )}
+      <ErrorNotify message={errorMessage} problem={errorProblem} />
+      <LoadingComponent loading={loading} />
+    </NavigationContainer>
+  );
+};
+export default App;
