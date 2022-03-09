@@ -1,4 +1,3 @@
-import 'react-native-gesture-handler';
 import React, {Component, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import LogedDrawer from './src/components/drawer/loged.drawer';
@@ -16,7 +15,7 @@ import {
 
 const App = () => {
   const currentHours = new Date().getHours();
-  const [loged, setLoged] = useState(false);
+  const [loged, setLoged] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
   const [errorProblem, setErrorProblem] = useState(null);
   const [loading, setLoading] = useState(false);
