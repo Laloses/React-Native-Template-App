@@ -15,7 +15,7 @@ import {
 
 const App = () => {
   const currentHours = new Date().getHours();
-  const [loged, setLoged] = useState(true);
+  const [loged, setLoged] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [errorProblem, setErrorProblem] = useState(null);
   const [loading, setLoading] = useState(false);

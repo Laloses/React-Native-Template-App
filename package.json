@@ -1,43 +1,70 @@
 {
   "name": "TemplateApp",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "clean-android": "cd android && ./gradlew clean && cd ../",
+    "clean-ios": "cd ios && xcodebuild clean && cd ../", 
     "android": "react-native run-android",
+    "android-bundle-debug": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && cd android && ./gradlew assembleDebug && cd ../",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "start-cache": "react-native start --reset-cache",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "check-dependencies": "rnx-dep-check",
+    "fix-dependencies": "rnx-dep-check --write",
+    "update-dependencies": "rnx-dep-check --set-version"
   },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "~1.15.6",
-    "@react-native-community/checkbox": "~0.5.8",
-    "@react-native-community/masked-view": "~0.1.11",
-    "@react-navigation/bottom-tabs": "~6.0.5",
-    "@react-navigation/drawer": "~5.12.5",
-    "@react-navigation/native": "~5.9.8",
-    "@react-navigation/stack": "~5.14.5",
-    "react": "~17.0.1",
-    "react-native": "~0.64.3",
-    "react-native-gesture-handler": "~1.10.3",
-    "react-native-reanimated": "~2.2.0",
-    "react-native-safe-area-context": "~3.2.0",
-    "react-native-screens": "~3.4.0",
-    "react-native-webview": "~11.13.0"
+    "@react-native-async-storage/async-storage": "^1.15.8",
+    "@react-native-community/checkbox": "^0.5.8",
+    "@react-navigation/bottom-tabs": "^6.3.1",
+    "@react-navigation/drawer": "^6.4.1",
+    "@react-navigation/native": "^6.0.8",
+    "@react-navigation/stack": "^6.2.0",
+    "react": "^17.0.2",
+    "react-native": "0.68.2",
+    "react-native-gesture-handler": "^2.3.2",
+    "react-native-reanimated": "^2.5.0",
+    "react-native-safe-area-context": "^3.2.0",
+    "react-native-screens": "^3.13.1",
+    "react-native-webview": "^11.13.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.0",
+    "@babel/core": "^7.12.9",
     "@babel/runtime": "^7.12.5",
     "@react-native-community/eslint-config": "^2.0.0",
+    "@rnx-kit/dep-check": "^1.12.16",
     "babel-jest": "^26.6.3",
-    "eslint": "^7.14.0",
+    "eslint": "^7.32.0",
     "jest": "^26.6.3",
-    "metro-react-native-babel-preset": "^0.64.0",
-    "react-test-renderer": "17.0.1"
+    "metro-react-native-babel-preset": "^0.67.0",
+    "react-test-renderer": "17.0.2"
   },
   "jest": {
     "preset": "react-native"
+  },
+  "rnx-kit": {
+    "reactNativeVersion": "^0.68",
+    "kitType": "app",
+    "capabilities": [
+      "animation",
+      "babel-preset-react-native",
+      "checkbox",
+      "core",
+      "core-android",
+      "core-ios",
+      "gestures",
+      "jest",
+      "navigation/native",
+      "navigation/stack",
+      "react",
+      "react-test-renderer",
+      "safe-area",
+      "screens",
+      "storage",
+      "webview"
+    ]
   }
 }

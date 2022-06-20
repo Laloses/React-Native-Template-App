@@ -49,7 +49,7 @@ const LoginComponent = ({
   const handleLogIn = async (user, pass) => {
     try {
       handleLoading(true);
-      let res = await API.instance.login(user, pass);
+      let res = {}; //await API.instance.login(user, pass);
       console.log('return login', res);
       //Correcto
       if (typeof res === 'object') {
